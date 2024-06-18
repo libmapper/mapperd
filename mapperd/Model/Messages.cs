@@ -14,7 +14,7 @@ public record Message
     /// <summary>
     /// Opcode
     /// </summary>
-    public int Op { get; init; }
+    public OpCode Op { get; init; }
     
     /// <summary>
     /// Message (possibly null)
@@ -23,7 +23,7 @@ public record Message
 }
 
 
-public enum OpCodes
+public enum OpCode
 {
     /*
       Client -> Daemon messages
