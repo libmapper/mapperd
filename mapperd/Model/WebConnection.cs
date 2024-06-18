@@ -12,7 +12,7 @@ public record WebConnection(long id)
     /// <summary>
     /// Owned devices
     /// </summary>
-    public List<Device> Devices { get; init; } = new();
+    public Dictionary<long, Device> Devices { get; init; } = new();
 
     /// <summary>
     /// Connection settings
