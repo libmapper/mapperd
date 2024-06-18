@@ -36,11 +36,11 @@ public class ConnectionManager
     }
 }
 
-public struct SocketMeta
+public class SocketMeta
 {
     public WebSocket Socket;
     public Task<WebSocketReceiveResult> RecvTask;
     public ArraySegment<byte> RecvBuffer;
-    public long? ConnectionId;
+    public long ConnectionId;
     public TaskCompletionSource CloseTask;
 }

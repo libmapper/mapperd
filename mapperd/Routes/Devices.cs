@@ -2,6 +2,7 @@ using IdGen;
 using Mapper;
 using mapperd.Model;
 using mapperd.Util;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mapperd.Routes;
@@ -10,6 +11,12 @@ namespace mapperd.Routes;
 [ApiController]
 public class DevicesController(IdGenerator _idGen) : ControllerBase
 {
+    [HttpOptions]
+    public ActionResult Bruh()
+    {
+        return Ok();
+    }
+    
     [HttpPost]
     [RequiresConnection]
     public DeviceCreateResponse Create([FromBody] DeviceCreateRequest request)

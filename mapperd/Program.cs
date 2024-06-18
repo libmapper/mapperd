@@ -22,7 +22,7 @@ public class Program
         {
             opt.OperationFilter<SessionIDParameterAdder>();
         });
-
+        
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
@@ -45,6 +45,13 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.Use(async (context, next) =>
+        {
+            context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
+            await next.Invoke();
+        });
+        
         app.UseWebSockets();
         
        // app.UseHttpsRedirection();

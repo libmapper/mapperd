@@ -7,7 +7,11 @@ public class PollJob(ConnectionManager _mgr) : IHostedService
     private bool _running = true;
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        new Thread(Run).Start();
+        var thread = new Thread(Run)
+        {
+            IsBackground = true
+        };
+        thread.Start();
         return Task.CompletedTask;
     }
 
