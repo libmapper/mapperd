@@ -2,17 +2,22 @@ using Mapper;
 
 namespace mapperd.Model;
 
-public record WebConnection(long id)
+public record WebConnection(long _id)
 {
     /// <summary>
     /// Connection identifier
     /// </summary>
-    public long Id { get; init; } = id;
+    public long Id { get; init; } = _id;
 
     /// <summary>
     /// Owned devices
     /// </summary>
     public Dictionary<long, Device> Devices { get; init; } = new();
+
+    /// <summary>
+    /// Signals
+    /// </summary>
+    public Dictionary<long, Signal> Signals { get; init; } = new();
 
     /// <summary>
     /// Connection settings
