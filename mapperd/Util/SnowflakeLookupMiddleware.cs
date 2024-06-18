@@ -15,7 +15,7 @@ public class SnowflakeLookupMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var snowflake = context.Request.Headers["X-Frame-ID"];
+        var snowflake = context.Request.Headers["Session-ID"];
         if (snowflake.Count > 0)
         {
             var snowflakeId = snowflake[0];

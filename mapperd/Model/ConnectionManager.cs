@@ -42,4 +42,5 @@ public struct SocketMeta
     public Task<WebSocketReceiveResult> RecvTask;
     public ArraySegment<byte> RecvBuffer;
     public long? ConnectionId;
+    public TaskCompletionSource CloseTask;
 }

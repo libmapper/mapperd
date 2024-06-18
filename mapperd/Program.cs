@@ -34,6 +34,7 @@ public class Program
         builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
         builder.Services.AddSingleton<ConnectionManager>();
         builder.Services.AddHostedService<WebsocketJob>();
+        builder.Services.AddHostedService<PollJob>();
         
         var app = builder.Build();
 
