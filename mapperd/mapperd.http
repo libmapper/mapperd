@@ -1,0 +1,6 @@
+@mapperd_HostAddress = http://localhost:5001
+
+GET {{mapperd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
