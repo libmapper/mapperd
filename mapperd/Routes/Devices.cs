@@ -11,13 +11,20 @@ namespace mapperd.Routes;
 public class DevicesController(IdGenerator _idGen) : ControllerBase
 {
     [HttpPost]
-    public void Create([FromBody] DeviceCreateRequest request)
+    [RequiresConnection]
+    public DeviceCreateResponse Create([FromBody] DeviceCreateRequest request)
     {
         // Create device
         var dev = new Device(request.Name);
         // Add device to connection
         var conn = (WebConnection) HttpContext.Items["Connection"];
-        conn.Devices.Add(_idGen.CreateId(), dev);
+        var id = _idGen.CreateId();
+        conn.Devices.Add(id, dev);
+        return new DeviceCreateResponse
+        {
+            Successful = true,
+            DeviceId = id
+        };
     }
 }
 
@@ -28,6 +35,6 @@ public struct DeviceCreateRequest
 
 public struct DeviceCreateResponse
 {
-    public bool Successful;
-    public ulong DeviceId;
+    public bool Successful { get; set; }
+    public long DeviceId { get; set; }
 }
