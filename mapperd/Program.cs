@@ -18,6 +18,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddControllers();
+
         // Identifier generator
         builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
         builder.Services.AddSingleton<ConnectionManager>();
