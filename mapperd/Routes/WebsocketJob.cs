@@ -19,45 +19,18 @@ public class WebsocketJob : IHostedService
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        _thread = new Thread(() => Recieve());
+        _thread = new Thread(() => Receive());
+        Console.WriteLine("Starting websocket job");
         return Task.CompletedTask;
     }
 
     private ArraySegment<Byte> buffer = new(new byte[8192]);
     
-    private async void Recieve()
+    private async void Receive()
     {
         while (_running)
         {
-            // Check pending connections
-            foreach (var pending in _manager.PendingSockets) 
-            {
-                if (pending.RecvTask.IsCompleted)
-                {
-                    var result = await pending.RecvTask;
-                    if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        _manager.PendingSockets.Remove(pending);
-                        continue;
-                    }
-                    var message = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
-                    var msg = JsonSerializer.Deserialize<Message>(message);
-                    if (msg.Op == OpCode.Init)
-                    {
-                        var con = _manager.ReserveConnection();
-                        var response = new Message
-                        {
-                            Op = OpCode.ConnectionId,
-                            Data = JsonValue.Create(con.Id)
-                        };
-                        var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-                        await pending.Socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, 
-                            true, CancellationToken.None);
-                        _manager.PendingSockets.Remove(pending);
-                        _manager.Connections.Add(con.Id, con);
-                    }
-                }
-            }
+            // 
             
             Thread.Sleep(1);
         }
@@ -66,6 +39,7 @@ public class WebsocketJob : IHostedService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _running = false;
+        Console.WriteLine("Stopping job");
         return Task.CompletedTask;
     }
 }

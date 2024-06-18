@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Text.Json;
 using IdGen;
 using mapperd.Model;
+using mapperd.Routes;
 using mapperd.Util;
 
 namespace mapperd;
@@ -18,12 +20,18 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+                options.JsonSerializerOptions.WriteIndented = true;
+            });
 
         // Identifier generator
         builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
         builder.Services.AddSingleton<ConnectionManager>();
-
+        builder.Services.AddHostedService<WebsocketJob>();
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
