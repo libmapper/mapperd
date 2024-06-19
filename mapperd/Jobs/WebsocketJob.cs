@@ -16,6 +16,7 @@ public class WebsocketJob : IHostedService
 
     private Thread _thread;
     private bool _running = true;
+    private CancellationTokenSource _cts = new();
     
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -69,7 +70,7 @@ public class WebsocketJob : IHostedService
                 }
                 
                 // reset the buffer
-                socket.RecvTask = socket.Socket.ReceiveAsync(socket.RecvBuffer, CancellationToken.None);
+                socket.RecvTask = socket.Socket.ReceiveAsync(socket.RecvBuffer, _cts.Token);
 
             }
             
@@ -81,6 +82,6 @@ public class WebsocketJob : IHostedService
     {
         _running = false;
         Console.WriteLine("Stopping job");
-        return Task.CompletedTask;
+        return _cts.CancelAsync();
     }
 }
