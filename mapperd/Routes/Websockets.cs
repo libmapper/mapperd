@@ -29,7 +29,7 @@ public class WebsocketController(ConnectionManager mgr) : ControllerBase
             var response = new Message
             {
                 Op = OpCode.ConnectionId,
-                Data = JsonValue.Create(con.Id)
+                Data = JsonValue.Create(con.Id.ToString())
             };
             var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
             await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
