@@ -11,11 +11,6 @@ namespace mapperd.Routes;
 [ApiController]
 public class DevicesController(IdGenerator _idGen) : ControllerBase
 {
-    [HttpOptions]
-    public ActionResult Bruh()
-    {
-        return Ok();
-    }
     
     [HttpPost]
     [RequiresConnection]

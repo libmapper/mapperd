@@ -35,6 +35,16 @@ public class Program
         builder.Services.AddSingleton<ConnectionManager>();
         builder.Services.AddHostedService<WebsocketJob>();
         builder.Services.AddHostedService<PollJob>();
+
+        builder.Services.AddCors((options) =>
+        {
+            options.AddDefaultPolicy(opts =>
+            {
+                opts.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin();
+            });
+        });
         
         var app = builder.Build();
 
@@ -45,12 +55,7 @@ public class Program
             app.UseSwaggerUI();
         }
 
-        app.Use(async (context, next) =>
-        {
-            context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
-            context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
-            await next.Invoke();
-        });
+        app.UseCors();
         
         app.UseWebSockets();
         
