@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace mapperd.Model;
 /*
@@ -46,6 +47,7 @@ public enum OpCode
 struct SignalData
 {
     public string SignalId { get; set; } // Signal ID
+    [JsonIgnore]
     public long SignalIdLong => long.Parse(SignalId);
     public JsonNode Value { get; set; } // Whatever value the signal has (number list for vectors, single number for scalars, etc)
 }
