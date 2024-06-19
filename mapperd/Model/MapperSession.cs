@@ -36,4 +36,9 @@ public class ConnectionSettings
     /// Milliseconds between each poll
     /// </summary>
     public int PollingInterval { get; set; } = 50;
+    /// <summary>
+    /// Time in seconds before the session is destroyed after being orphaned
+    /// Set to -1 to make session live forever until destroyed manually
+    /// </summary>
+    public int DestroyTimeout { get; set; } = 3;
 }

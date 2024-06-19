@@ -95,9 +95,9 @@ public class WebsocketJob : IHostedService
         {
             if (_manager.ConnectedSockets.Find(socket => socket.ConnectionId == session.Key) == null)
             {
-                if (session.Value.DestructionTime == null)
+                if (session.Value.DestructionTime == null && session.Value.Settings.DestroyTimeout >= 0)
                 {
-                    session.Value.DestructionTime = DateTime.Now.AddSeconds(3);
+                    session.Value.DestructionTime = DateTime.Now.AddSeconds(session.Value.Settings.DestroyTimeout);
                 }
             } else if (session.Value.DestructionTime != null)
             {
