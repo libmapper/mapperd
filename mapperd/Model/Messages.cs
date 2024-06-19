@@ -45,6 +45,7 @@ public enum OpCode
 
 struct SignalData
 {
-    public ulong SignalId; // Signal ID
-    public JsonNode Value; // Whatever value the signal has (number list for vectors, single number for scalars, etc)
+    public string SignalId { get; set; } // Signal ID
+    public long SignalIdLong => long.Parse(SignalId);
+    public JsonNode Value { get; set; } // Whatever value the signal has (number list for vectors, single number for scalars, etc)
 }
