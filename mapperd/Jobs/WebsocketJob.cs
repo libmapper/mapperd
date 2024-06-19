@@ -73,6 +73,8 @@ public class WebsocketJob : IHostedService
                 socket.RecvTask = socket.Socket.ReceiveAsync(socket.RecvBuffer, _cts.Token);
 
             }
+
+            _manager.ConnectedSockets.RemoveAll(socket => socket.Socket.State == WebSocketState.Closed);
             
             Thread.Sleep(1);
         }
