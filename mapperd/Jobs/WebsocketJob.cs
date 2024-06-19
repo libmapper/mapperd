@@ -73,9 +73,56 @@ public class WebsocketJob : IHostedService
 
             }
 
+            // find orphaned sessions and remove
+
+            TagOrphaned();
+            DestroyOrphaned();
+            
+            // remove disconnected sockets
             _manager.ConnectedSockets.RemoveAll(socket => socket.Socket.State == WebSocketState.Closed);
             
             Thread.Sleep(1);
+        }
+    }
+
+    /// <summary>
+    /// Will tag any Sessions that have no connections claiming them and do not already have a destruction time set
+    /// Will set a time three seconds in the future to destroy the session
+    /// </summary>
+    void TagOrphaned()
+    {
+        foreach (var session in _manager.Sessions)
+        {
+            if (_manager.ConnectedSockets.Find(socket => socket.ConnectionId == session.Key) == null)
+            {
+                if (session.Value.DestructionTime == null)
+                {
+                    session.Value.DestructionTime = DateTime.Now.AddSeconds(3);
+                }
+            } else if (session.Value.DestructionTime != null)
+            {
+                // session was resumed
+                session.Value.DestructionTime = null;
+            }
+        }
+    }
+    
+    void DestroyOrphaned()
+    {
+        var now = DateTime.Now;
+        var toRemove = new List<long>();
+        foreach (var session in _manager.Sessions)
+        {
+            if (session.Value.DestructionTime != null && session.Value.DestructionTime < now)
+            {
+                toRemove.Add(session.Key);
+            }
+        }
+
+        foreach (var id in toRemove)
+        {
+            _manager.Sessions.Remove(id);
+            Console.WriteLine($"Destroyed session {id}");
         }
     }
 

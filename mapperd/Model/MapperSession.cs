@@ -23,6 +23,11 @@ public record MapperSession(long _id)
     /// Connection settings
     /// </summary>
     public ConnectionSettings Settings { get; init; } = new();
+
+    /// <summary>
+    /// When the session will be destroyed
+    /// </summary>
+    public DateTimeOffset? DestructionTime { get; set; } = null;
 }
 
 public class ConnectionSettings
