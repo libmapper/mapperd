@@ -26,7 +26,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         conn.Signals.Add(sigId, sig);
         return Ok(new CreateSignalResponse
         {
-            SignalId = sigId,
+            SignalId = sigId.ToString(),
             Successful = true
         });
 
@@ -42,5 +42,5 @@ public struct CreateSignalArgs
 public struct CreateSignalResponse
 {
     public bool Successful { get; set; }
-    public long SignalId { get; set; }
+    public string SignalId { get; set; }
 }

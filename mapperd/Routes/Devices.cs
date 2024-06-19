@@ -25,7 +25,7 @@ public class DevicesController(IdGenerator _idGen) : ControllerBase
         return new DeviceCreateResponse
         {
             Successful = true,
-            DeviceId = id
+            DeviceId = id.ToString()
         };
     }
 }
@@ -38,5 +38,5 @@ public struct DeviceCreateRequest
 public struct DeviceCreateResponse
 {
     public bool Successful { get; set; }
-    public long DeviceId { get; set; }
+    public string DeviceId { get; set; }
 }
