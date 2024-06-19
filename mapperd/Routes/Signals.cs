@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace mapperd.Routes;
 
-[Route("/devices/{id}/signals")]
+[Route("/devices/{id:long}/signals")]
 [ApiController]
 public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBase
 {
