@@ -51,6 +51,26 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
             Value = JsonValue.Create(signal.GetValue().Item1)
         });
     }
+    
+    [HttpDelete]
+    [RequiresConnection]
+    [Route("{signalId:long}")]
+    public IActionResult Delete(long id, long signalId)
+    {
+        var conn = (WebConnection) HttpContext.Items["Connection"];
+        if (!conn.Devices.TryGetValue(id, out var device))
+        {
+            return NotFound();
+        }
+        if (!conn.Signals.TryGetValue(signalId, out var signal))
+        {
+            return NotFound();
+        }
+
+        device.RemoveSignal(signal);
+        conn.Signals.Remove(signalId);
+        return NoContent();
+    }
 }
 
 public struct CreateSignalArgs
