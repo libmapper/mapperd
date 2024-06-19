@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using IdGen;
+using Mapper;
 using mapperd.Model;
 using mapperd.Routes;
 using mapperd.Util;
@@ -32,6 +33,8 @@ public class Program
         // Identifier generator
         builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
         builder.Services.AddSingleton<ConnectionManager>();
+        builder.Services.AddSingleton(new Graph());
+        
         builder.Services.AddHostedService<WebsocketJob>();
         builder.Services.AddHostedService<PollJob>();
 

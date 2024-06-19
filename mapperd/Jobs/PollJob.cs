@@ -1,8 +1,9 @@
+using Mapper;
 using mapperd.Model;
 
 namespace mapperd.Routes;
 
-public class PollJob(ConnectionManager _mgr) : IHostedService
+public class PollJob(ConnectionManager _mgr, Graph _graph) : IHostedService
 {
     private bool _running = true;
     public Task StartAsync(CancellationToken cancellationToken)
@@ -19,6 +20,7 @@ public class PollJob(ConnectionManager _mgr) : IHostedService
     {
         while (_running)
         {
+            _graph.Poll();
             foreach (var session in _mgr.Sessions)
             {
                 foreach (var device in session.Value.Devices)

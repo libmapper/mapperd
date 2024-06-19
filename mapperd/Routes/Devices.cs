@@ -9,7 +9,7 @@ namespace mapperd.Routes;
 
 [Route("/devices")]
 [ApiController]
-public class DevicesController(IdGenerator _idGen) : ControllerBase
+public class DevicesController(IdGenerator _idGen, Graph _graph) : ControllerBase
 {
     
     [HttpPost]
@@ -17,7 +17,7 @@ public class DevicesController(IdGenerator _idGen) : ControllerBase
     public DeviceCreateResponse Create([FromBody] DeviceCreateRequest request)
     {
         // Create device
-        var dev = new Device(request.Name);
+        var dev = new Device(request.Name, _graph);
         // Add device to connection
         var conn = (MapperSession) HttpContext.Items["Connection"];
         var id = _idGen.CreateId();
