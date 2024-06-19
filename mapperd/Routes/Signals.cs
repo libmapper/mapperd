@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using IdGen;
 using Mapper;
 using mapperd.Model;
@@ -28,7 +29,27 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
             SignalId = sigId.ToString(),
             Successful = true
         });
-
+    }
+    
+    [Route("{signalId:long}")]
+    [HttpGet]
+    [RequiresConnection]
+    public IActionResult Get(long id, long signalId)
+    {
+        var conn = (WebConnection) HttpContext.Items["Connection"];
+        if (!conn.Devices.TryGetValue(id, out var device))
+        {
+            return NotFound();
+        }
+        if (!conn.Signals.TryGetValue(signalId, out var signal))
+        {
+            return NotFound();
+        }
+        return Ok(new SignalData
+        {
+            SignalId = signalId.ToString(),
+            Value = JsonValue.Create(signal.GetValue().Item1)
+        });
     }
 }
 
