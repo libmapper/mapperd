@@ -44,7 +44,6 @@ public class WebsocketJob : IHostedService
                     }
                 }
                 if (!socket.RecvTask.IsCompleted) continue;
-                Console.WriteLine("Received Message!");
                 var result = await socket.RecvTask;
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -58,7 +57,15 @@ public class WebsocketJob : IHostedService
                 var msg = JsonSerializer.Deserialize<Message>(message, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (msg.Op == OpCode.SignalData)
                 {
-                    Console.WriteLine("Signal Data!");
+                    var data = msg.Data.Deserialize<SignalData>();
+                    if (_manager.Connections.TryGetValue(socket.ConnectionId, out var connection))
+                    {
+                        if (connection.Signals.TryGetValue(data.SignalIdLong, out var signal))
+                        {
+                            signal.SetValue(data.Value.Deserialize<float>());
+                            Console.WriteLine($"Set signal value to {data.Value}");
+                        }
+                    }
                 }
                 
                 // reset the buffer
