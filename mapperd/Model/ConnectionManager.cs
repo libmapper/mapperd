@@ -15,12 +15,12 @@ public class ConnectionManager
     }
     
     public List<SocketMeta> ConnectedSockets { get; } = new();
-    public Dictionary<long, WebConnection> Connections { get; } = new();
+    public Dictionary<long, MapperSession> Sessions { get; } = new();
 
-    public WebConnection ReserveConnection()
+    public MapperSession ReserveConnection()
     {
-        var con = new WebConnection(IdGenerator.CreateId());
-        Connections.Add(con.Id, con);
+        var con = new MapperSession(IdGenerator.CreateId());
+        Sessions.Add(con.Id, con);
         return con;
     }
     public void QueueOutgoingMessage(long id, Message message)

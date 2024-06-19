@@ -50,7 +50,6 @@ public class WebsocketJob : IHostedService
                 {
                     await socket.Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
                     socket.CloseTask.SetResult();
-                   // _manager.ConnectedSockets.Remove(socket);
                     continue;
                 }
                 
@@ -59,7 +58,7 @@ public class WebsocketJob : IHostedService
                 if (msg.Op == OpCode.SignalData)
                 {
                     var data = msg.Data.Deserialize<SignalData>();
-                    if (_manager.Connections.TryGetValue(socket.ConnectionId, out var connection))
+                    if (_manager.Sessions.TryGetValue(socket.ConnectionId, out var connection))
                     {
                         if (connection.Signals.TryGetValue(data.SignalIdLong, out var signal))
                         {

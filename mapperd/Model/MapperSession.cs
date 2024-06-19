@@ -2,7 +2,7 @@ using Mapper;
 
 namespace mapperd.Model;
 
-public record WebConnection(long _id)
+public record MapperSession(long _id)
 {
     /// <summary>
     /// Connection identifier

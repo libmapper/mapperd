@@ -19,7 +19,7 @@ public class PollJob(ConnectionManager _mgr) : IHostedService
     {
         while (_running)
         {
-            foreach (var session in _mgr.Connections)
+            foreach (var session in _mgr.Sessions)
             {
                 foreach (var device in session.Value.Devices)
                 {

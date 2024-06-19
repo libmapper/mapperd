@@ -16,7 +16,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
     public IActionResult Create(long id, [FromBody] CreateSignalArgs args)
     {
         // check that the device exists
-        var conn = (WebConnection) HttpContext.Items["Connection"];
+        var conn = (MapperSession) HttpContext.Items["Connection"];
         if (!conn.Devices.TryGetValue(id, out var device))
         {
             return NotFound();
@@ -36,7 +36,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
     [RequiresConnection]
     public IActionResult Get(long id, long signalId)
     {
-        var conn = (WebConnection) HttpContext.Items["Connection"];
+        var conn = (MapperSession) HttpContext.Items["Connection"];
         if (!conn.Devices.TryGetValue(id, out var device))
         {
             return NotFound();
@@ -57,7 +57,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
     [Route("{signalId:long}")]
     public IActionResult Delete(long id, long signalId)
     {
-        var conn = (WebConnection) HttpContext.Items["Connection"];
+        var conn = (MapperSession) HttpContext.Items["Connection"];
         if (!conn.Devices.TryGetValue(id, out var device))
         {
             return NotFound();

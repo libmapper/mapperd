@@ -19,7 +19,7 @@ public class DevicesController(IdGenerator _idGen) : ControllerBase
         // Create device
         var dev = new Device(request.Name);
         // Add device to connection
-        var conn = (WebConnection) HttpContext.Items["Connection"];
+        var conn = (MapperSession) HttpContext.Items["Connection"];
         var id = _idGen.CreateId();
         conn.Devices.Add(id, dev);
         return new DeviceCreateResponse

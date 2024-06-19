@@ -21,9 +21,9 @@ public class SnowflakeLookupMiddleware
             var snowflakeId = snowflake[0];
             if (long.TryParse(snowflakeId, out var id))
             {
-                if (_connectionManager.Connections.ContainsKey(id))
+                if (_connectionManager.Sessions.ContainsKey(id))
                 {
-                    var connection = _connectionManager.Connections[id];
+                    var connection = _connectionManager.Sessions[id];
                     context.Items["Connection"] = connection;
                 }
             }

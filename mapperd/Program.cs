@@ -22,7 +22,6 @@ public class Program
         {
             opt.OperationFilter<SessionIDParameterAdder>();
         });
-        
         builder.Services.AddControllers()
             .AddJsonOptions(options =>
             {
