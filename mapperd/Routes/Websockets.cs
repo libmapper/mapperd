@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace mapperd.Routes;
 
 [Route("/ws")]
-public class WebsocketController(ConnectionManager mgr) : ControllerBase
+public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _jOpts) : ControllerBase
 {
     [HttpGet]
     public async Task Get()
@@ -18,7 +18,7 @@ public class WebsocketController(ConnectionManager mgr) : ControllerBase
         var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
         var message = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
         Console.WriteLine(message);
-        var msg = JsonSerializer.Deserialize<Message>(message, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var msg = JsonSerializer.Deserialize<Message>(message, _jOpts);
         if (msg.Op != OpCode.Init)
         {
             Console.WriteLine("Invalid message");
@@ -31,7 +31,7 @@ public class WebsocketController(ConnectionManager mgr) : ControllerBase
                 Op = OpCode.ConnectionId,
                 Data = JsonValue.Create(con.Id.ToString())
             };
-            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, _jOpts));
             await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
             var closeSource = new TaskCompletionSource();
             var meta = new SocketMeta

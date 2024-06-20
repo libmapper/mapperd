@@ -6,13 +6,8 @@ using mapperd.Model;
 
 namespace mapperd.Routes;
 
-public class WebsocketJob : IHostedService
+public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOpts) : IHostedService
 {
-    private ConnectionManager _manager;
-    public WebsocketJob(ConnectionManager mgr)
-    {
-        _manager = mgr;
-    }
 
     private Thread _thread;
     private bool _running = true;
@@ -40,7 +35,7 @@ public class WebsocketJob : IHostedService
                 {
                     foreach (var outgoing in queue)
                     {
-                        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing));
+                        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
                         await socket.Socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
                     }
                 }
@@ -54,10 +49,10 @@ public class WebsocketJob : IHostedService
                 }
                 
                 var message = Encoding.UTF8.GetString(socket.RecvBuffer.Array, 0, result.Count);
-                var msg = JsonSerializer.Deserialize<Message>(message, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var msg = JsonSerializer.Deserialize<Message>(message, _jOpts);
                 if (msg.Op == OpCode.SignalData)
                 {
-                    var data = msg.Data.Deserialize<SignalData>();
+                    var data = msg.Data.Deserialize<SignalData>(_jOpts);
                     if (_manager.Sessions.TryGetValue(socket.ConnectionId, out var connection))
                     {
                         if (connection.Signals.TryGetValue(data.SignalIdLong, out var signal))

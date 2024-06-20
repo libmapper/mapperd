@@ -34,6 +34,11 @@ public class Program
         builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
         builder.Services.AddSingleton<ConnectionManager>();
         builder.Services.AddSingleton(new Graph());
+        builder.Services.AddSingleton(new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+        });
         
         builder.Services.AddHostedService<WebsocketJob>();
         builder.Services.AddHostedService<PollJob>();
