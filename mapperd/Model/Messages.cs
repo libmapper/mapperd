@@ -41,7 +41,14 @@ public enum OpCode
         Daemon -> Client messages
      */
     ConnectionId = 3, // Connection ID. Sent in reply to an Init opcode. Data: Connection ID (ulong)
-    Error = 4, // Error message. Data: Error message (string)
+    Error = 4, // Error message. Data: Error (enum value)
+}
+
+enum ErrorReason
+{
+    UnknownSignal = 1,
+    InvalidOpcode = 2,
+    NoSession = 3
 }
 
 struct SignalData
