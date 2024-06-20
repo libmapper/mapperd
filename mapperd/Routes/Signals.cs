@@ -22,6 +22,8 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
             return NotFound();
         }
         var sig = device.AddSignal(args.Direction, args.Name, 1, MapperType.Float);
+        sig.SetProperty(Property.Min, args.Min);
+        sig.SetProperty(Property.Max, args.Max);
         var sigId = _idGen.CreateId();
         conn.Signals.Add(sigId, sig);
         return Ok(new CreateSignalResponse
@@ -77,6 +79,8 @@ public struct CreateSignalArgs
 {
     public string Name { get; set; }
     public Signal.Direction Direction { get; set; }
+    public float Min { get; set; }
+    public float Max { get; set; }
 }
 
 public struct CreateSignalResponse
