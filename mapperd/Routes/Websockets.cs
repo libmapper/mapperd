@@ -21,7 +21,14 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
         var msg = JsonSerializer.Deserialize<Message>(message, _jOpts);
         if (msg.Op != OpCode.Init)
         {
-            Console.WriteLine("Invalid message");
+            var response = new Message
+            {
+                Op = OpCode.Error,
+                Data = JsonValue.Create((int)ErrorReason.NoSession)
+            };
+            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, _jOpts));
+            await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Invalid opcode", CancellationToken.None);
         }
         else
         {
