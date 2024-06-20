@@ -18,7 +18,15 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
         var result = await socket.ReceiveAsync(buffer, CancellationToken.None);
         var message = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
         Console.WriteLine(message);
-        var msg = JsonSerializer.Deserialize<Message>(message, _jOpts);
+        Message msg;
+        try
+        {
+            msg = JsonSerializer.Deserialize<Message>(message, _jOpts);
+        }
+        catch
+        {
+            msg = new Message { Op = OpCode.Error, Data = null };
+        }
         if (msg.Op != OpCode.Init)
         {
             var response = new Message

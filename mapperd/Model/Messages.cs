@@ -20,7 +20,7 @@ public record Message
     /// <summary>
     /// Message (possibly null)
     /// </summary>
-    public JsonNode Data { get; init; }
+    public JsonNode? Data { get; init; }
 }
 
 
