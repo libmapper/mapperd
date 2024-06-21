@@ -33,13 +33,13 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
                 // check for changing signals
                 foreach (var signal in session.Value.Signals)
                 {
-                    var flags = signal.Value.FetchStatus();
+                    var flags = signal.Value.Signal.FetchStatus();
                     if (flags.HasFlag(Signal.StatusFlags.SetRemote))
                     {
                         var data = new SignalData
                         {
                             SignalId = signal.Key.ToString(),
-                            Value = JsonValue.Create(signal.Value.GetValue().Item1)
+                            Value = JsonValue.Create(signal.Value.Signal.GetValue().Item1)
                         };
                         _mgr.QueueOutgoingMessage(session.Key,
                             new Message

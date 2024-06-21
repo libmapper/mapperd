@@ -17,7 +17,7 @@ public record MapperSession(long _id)
     /// <summary>
     /// Signals
     /// </summary>
-    public Dictionary<long, Signal> Signals { get; init; } = new();
+    public Dictionary<long, SignalSpec> Signals { get; init; } = new();
 
     /// <summary>
     /// Connection settings
@@ -41,4 +41,22 @@ public class ConnectionSettings
     /// Set to -1 to make session live forever until destroyed manually
     /// </summary>
     public int DestroyTimeout { get; set; } = 3;
+}
+
+
+public struct SignalSpec
+{
+    public Signal Signal;
+    public MapperType Type;
+
+    public static Type ConvertMapperTypeToNative(MapperType input)
+    {
+        return (input) switch
+        {
+            MapperType.Double => typeof(double),
+            MapperType.Float => typeof(float),
+            MapperType.Int32 => typeof(int),
+            MapperType.Int64 => typeof(long)
+        };
+    }
 }
