@@ -21,7 +21,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         {
             return NotFound();
         }
-        var sig = device.AddSignal(args.Direction, args.Name, 1, args.Type, unit: args.Units);
+        var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, args.Type, unit: args.Units);
         if (args.Min != null)
         {
             sig.SetProperty(Property.Min, args.Min);
@@ -86,11 +86,13 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
     }
 }
 
-public struct CreateSignalArgs
+public struct CreateSignalArgs()
 {
     public string Name { get; set; }
     public Signal.Direction Direction { get; set; }
     public MapperType Type { get; set; }
+
+    public int VectorLength { get; set; } = 1;
     public float? Min { get; set; }
     public float? Max { get; set; }
     public string? Units { get; set; }

@@ -71,7 +71,14 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                     {
                         if (connection.Signals.TryGetValue(data.SignalIdLong, out var signal))
                         {
-                            signal.Signal.SetValue(data.Value.Deserialize(SignalSpec.ConvertMapperTypeToNative(signal.Type)));
+                            if (data.Value is JsonArray)
+                            {
+                                signal.Signal.SetValue(data.Value.Deserialize(SignalSpec.ConvertMapperTypeToNative(signal.Type).MakeArrayType()));
+                            }
+                            else
+                            {
+                                signal.Signal.SetValue(data.Value.Deserialize(SignalSpec.ConvertMapperTypeToNative(signal.Type)));
+                            }
                             Console.WriteLine($"Set signal value to {data.Value}");
                         }
                     }
