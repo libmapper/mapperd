@@ -34,18 +34,19 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                 
                 if (_manager.Outbox.TryGetValue(socket.ConnectionId, out var queue))
                 {
+                    _manager.LockOutbox();
                     List<ArraySegment<byte>> outgoingQueue = [];
-
-                    lock (_manager)
+                    foreach (var outgoing in queue.AsEnumerable().Reverse())
                     {
-                        foreach (var outgoing in queue)
-                        {
-                            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
-                            outgoingQueue.Add(new ArraySegment<byte>(bytes));
-                        }
-                        queue.Clear();
+                        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
+                        outgoingQueue.Add(new ArraySegment<byte>(bytes));
                     }
-                    
+                    queue.Clear();
+                    _manager.UnlockOutbox();
+                    if (outgoingQueue.Count > 0)
+                    {
+                        Console.WriteLine($"{outgoingQueue.Count} messages outgoing!");
+                    }
                     foreach (var oMsg in outgoingQueue)
                     {
                         await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);

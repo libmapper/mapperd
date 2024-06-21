@@ -25,7 +25,11 @@ public class ConnectionManager
     }
     public void QueueOutgoingMessage(long id, Message message)
     {
-        lock (this)
+        if (outLock)
+        {
+            outQueue.Add(new KeyValuePair<long, Message>(id, message));
+        }
+        else
         {
             if (Outbox.TryGetValue(id, out List<Message>? value))
             {
@@ -35,7 +39,37 @@ public class ConnectionManager
             {
                 Outbox.Add(id, [message]);
             }
-        }   
+        }
+    }
+
+    private bool outLock = false;
+    private List<KeyValuePair<long, Message>> outQueue = [];
+    public void LockOutbox()
+    {
+        outLock = true;
+    }
+
+    public void UnlockOutbox()
+    {
+        // flush the queue
+        foreach (var msg in outQueue)
+        {
+            if (Outbox.TryGetValue(msg.Key, out List<Message>? value))
+            {
+                value.Add(msg.Value);
+            }
+            else
+            {
+                Outbox.Add(msg.Key, [msg.Value]);
+            }
+        }
+
+        if (outQueue.Count > 4)
+        {
+            Console.WriteLine($"Overflow: {outQueue.Count} messages in queue");
+        }
+        outQueue.Clear();
+        outLock = false;
     }
 }
 
