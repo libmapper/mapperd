@@ -8,6 +8,8 @@ public class ConnectionManager
 
     public Dictionary<long, List<Message>> Outbox = new();    
     
+    public Mutex OutboxLock = new();
+    
     private IdGenerator IdGenerator { get; }
     public ConnectionManager(IdGenerator idGenerator)
     {
@@ -25,6 +27,7 @@ public class ConnectionManager
     }
     public void QueueOutgoingMessage(long id, Message message)
     {
+        OutboxLock.WaitOne();
         if (Outbox.TryGetValue(id, out List<Message>? value))
         {
             value.Add(message);
@@ -33,6 +36,7 @@ public class ConnectionManager
         {
             Outbox.Add(id, [message]);
         }
+        OutboxLock.ReleaseMutex();
     }
 }
 
