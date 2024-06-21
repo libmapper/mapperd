@@ -31,17 +31,27 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
             // read messages from all connected sockets
             foreach (var socket in _manager.ConnectedSockets)
             {
-                _manager.OutboxLock.WaitOne();
+                
                 if (_manager.Outbox.TryGetValue(socket.ConnectionId, out var queue))
                 {
-                    
-                    foreach (var outgoing in queue)
+                    List<ArraySegment<byte>> outgoingQueue = [];
+
+                    lock (_manager)
                     {
-                        var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
-                        await socket.Socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, CancellationToken.None);
+                        foreach (var outgoing in queue)
+                        {
+                            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
+                            outgoingQueue.Add(new ArraySegment<byte>(bytes));
+                        }
+                        queue.Clear();
+                    }
+                    
+                    foreach (var oMsg in outgoingQueue)
+                    {
+                        await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);
                     }
                 }
-                _manager.OutboxLock.ReleaseMutex();
+                
                 if (!socket.RecvTask.IsCompleted) continue;
                 var result = await socket.RecvTask;
                 if (result.MessageType == WebSocketMessageType.Close)
@@ -78,8 +88,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
             
             // remove disconnected sockets
             _manager.ConnectedSockets.RemoveAll(socket => socket.Socket.State == WebSocketState.Closed);
-            
-            Thread.Sleep(1);
+            Thread.Sleep(10);
         }
     }
 

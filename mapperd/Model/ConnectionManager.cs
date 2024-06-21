@@ -27,16 +27,17 @@ public class ConnectionManager
     }
     public void QueueOutgoingMessage(long id, Message message)
     {
-        OutboxLock.WaitOne();
-        if (Outbox.TryGetValue(id, out List<Message>? value))
+        lock (this)
         {
-            value.Add(message);
-        }
-        else
-        {
-            Outbox.Add(id, [message]);
-        }
-        OutboxLock.ReleaseMutex();
+            if (Outbox.TryGetValue(id, out List<Message>? value))
+            {
+                value.Add(message);
+            }
+            else
+            {
+                Outbox.Add(id, [message]);
+            }
+        }   
     }
 }
 

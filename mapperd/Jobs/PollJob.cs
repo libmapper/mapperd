@@ -1,9 +1,11 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Mapper;
 using mapperd.Model;
 
 namespace mapperd.Routes;
 
-public class PollJob(ConnectionManager _mgr, Graph _graph) : IHostedService
+public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions _jOpts) : IHostedService
 {
     private bool _running = true;
     public Task StartAsync(CancellationToken cancellationToken)
@@ -28,8 +30,28 @@ public class PollJob(ConnectionManager _mgr, Graph _graph) : IHostedService
                     device.Value
                         .Poll();
                 }
+                // check for changing signals
+                foreach (var signal in session.Value.Signals)
+                {
+                    var flags = signal.Value.FetchStatus();
+                    if (flags.HasFlag(Signal.StatusFlags.SetRemote))
+                    {
+                        var data = new SignalData
+                        {
+                            SignalId = signal.Key.ToString(),
+                            Value = JsonValue.Create(signal.Value.GetValue().Item1)
+                        };
+                        _mgr.QueueOutgoingMessage(session.Key,
+                            new Message
+                            {
+                                Op = OpCode.SignalData,
+                                Data = JsonSerializer.SerializeToNode(data, _jOpts)
+                            });
+                    }
+                }
             }
-            Thread.Sleep(10);
+            
+            Thread.Sleep(100);
         }
     }
 
