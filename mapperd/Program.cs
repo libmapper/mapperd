@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using IdGen;
 using Mapper;
 using mapperd.Model;
@@ -28,6 +29,7 @@ public class Program
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
                 options.JsonSerializerOptions.WriteIndented = true;
+                options.JsonSerializerOptions.TypeInfoResolver = new RequirePropertiesResolver();
             });
 
         // Identifier generator
