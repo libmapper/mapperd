@@ -43,10 +43,6 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                     }
                     queue.Clear();
                     _manager.UnlockOutbox();
-                    if (outgoingQueue.Count > 0)
-                    {
-                        Console.WriteLine($"{outgoingQueue.Count} messages outgoing!");
-                    }
                     foreach (var oMsg in outgoingQueue)
                     {
                         await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);
