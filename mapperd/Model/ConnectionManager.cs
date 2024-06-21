@@ -8,8 +8,6 @@ public class ConnectionManager
 
     public Dictionary<long, List<Message>> Outbox = new();    
     
-    public Mutex OutboxLock = new();
-    
     private IdGenerator IdGenerator { get; }
     public ConnectionManager(IdGenerator idGenerator)
     {
