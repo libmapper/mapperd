@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="IdGen" Version="3.0.7" />
-        <PackageReference Include="Mapper.NET" Version="2.4.6.4" />
+        <PackageReference Include="Mapper.NET" Version="2.4.7-alpha" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
