@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 using Mapper;
 using mapperd.Model;
 
-namespace mapperd.Routes;
+namespace mapperd.Jobs;
 
 public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions _jOpts) : IHostedService
 {

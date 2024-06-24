@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using IdGen;
 using Mapper;
+using mapperd.Jobs;
 using mapperd.Model;
 using mapperd.Routes;
 using mapperd.Util;

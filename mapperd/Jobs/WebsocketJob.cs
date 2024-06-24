@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using mapperd.Model;
 
-namespace mapperd.Routes;
+namespace mapperd.Jobs;
 
 public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOpts) : IHostedService
 {
