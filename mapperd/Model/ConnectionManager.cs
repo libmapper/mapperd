@@ -3,17 +3,13 @@ using IdGen;
 
 namespace mapperd.Model;
 
-public class ConnectionManager
+public class ConnectionManager(IdGenerator idGenerator)
 {
 
-    public Dictionary<long, List<Message>> Outbox = new();    
+    public readonly Dictionary<long, List<Message>> Outbox = new();    
     
-    private IdGenerator IdGenerator { get; }
-    public ConnectionManager(IdGenerator idGenerator)
-    {
-        IdGenerator = idGenerator;
-    }
-    
+    private IdGenerator IdGenerator { get; } = idGenerator;
+
     public List<SocketMeta> ConnectedSockets { get; } = new();
     public Dictionary<long, MapperSession> Sessions { get; } = new();
 
