@@ -22,6 +22,10 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
             return NotFound();
         }
         var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, args.Type, unit: args.Units);
+        if (sig.NativePtr == 0)
+        {
+            return BadRequest();
+        }
         if (args.Min != null)
         {
             sig.SetProperty(Property.Min, args.Min);
