@@ -21,11 +21,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         {
             return NotFound();
         }
-        var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, args.Type, unit: args.Units);
-        if (sig.NativePtr == 0)
-        {
-            return BadRequest();
-        }
+        var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, (MapperType)args.Type, unit: args.Units);
         if (args.Min != null)
         {
             sig.SetProperty(Property.Min, args.Min);
@@ -39,7 +35,7 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         conn.Signals.Add(sigId, new SignalSpec
         {
             Signal = sig,
-            Type = args.Type
+            Type = (MapperType)args.Type
         });
         return Ok(new CreateSignalResponse
         {
@@ -94,12 +90,19 @@ public struct CreateSignalArgs()
 {
     public string Name { get; set; }
     public Signal.Direction Direction { get; set; }
-    public MapperType Type { get; set; }
+    public ApiCreateType Type { get; set; }
 
     public int VectorLength { get; set; } = 1;
     public float? Min { get; set; }
     public float? Max { get; set; }
     public string? Units { get; set; }
+}
+
+public enum ApiCreateType
+{
+    Float = MapperType.Float,
+    Double = MapperType.Double,
+    Int32 = MapperType.Int32
 }
 
 public struct CreateSignalResponse
