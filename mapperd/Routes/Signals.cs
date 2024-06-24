@@ -4,16 +4,17 @@ using Mapper;
 using mapperd.Model;
 using mapperd.Util;
 using Microsoft.AspNetCore.Mvc;
+using NanoidDotNet;
 
 namespace mapperd.Routes;
 
-[Route("/devices/{id:long}/signals")]
+[Route("/devices/{id}/signals")]
 [ApiController]
-public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBase
+public class Signals(ConnectionManager _mgr) : ControllerBase
 {
     [HttpPost]
     [RequiresConnection]
-    public IActionResult Create(long id, [FromBody] CreateSignalArgs args)
+    public IActionResult Create(string id, [FromBody] CreateSignalArgs args)
     {
         // check that the device exists
         var conn = (MapperSession) HttpContext.Items["Connection"];
@@ -30,8 +31,8 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         {
             sig.SetProperty(Property.Max, args.Max);
         }
-        
-        var sigId = _idGen.CreateId();
+
+        var sigId = Nanoid.Generate();
         conn.Signals.Add(sigId, new SignalSpec
         {
             Signal = sig,
@@ -44,10 +45,10 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
         });
     }
     
-    [Route("{signalId:long}")]
+    [Route("{signalId}")]
     [HttpGet]
     [RequiresConnection]
-    public IActionResult Get(long id, long signalId)
+    public IActionResult Get(string id, string signalId)
     {
         var conn = (MapperSession) HttpContext.Items["Connection"];
         if (!conn.Devices.TryGetValue(id, out var device))
@@ -67,8 +68,8 @@ public class Signals(ConnectionManager _mgr, IdGenerator _idGen) : ControllerBas
     
     [HttpDelete]
     [RequiresConnection]
-    [Route("{signalId:long}")]
-    public IActionResult Delete(long id, long signalId)
+    [Route("{signalId}")]
+    public IActionResult Delete(string id, string signalId)
     {
         var conn = (MapperSession) HttpContext.Items["Connection"];
         if (!conn.Devices.TryGetValue(id, out var device))

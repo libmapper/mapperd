@@ -2,22 +2,22 @@ using Mapper;
 
 namespace mapperd.Model;
 
-public record MapperSession(long _id)
+public record MapperSession(string _id)
 {
     /// <summary>
     /// Connection identifier
     /// </summary>
-    public long Id { get; init; } = _id;
+    public string Id { get; init; } = _id;
 
     /// <summary>
     /// Owned devices
     /// </summary>
-    public Dictionary<long, Device> Devices { get; init; } = new();
+    public Dictionary<string, Device> Devices { get; init; } = new();
 
     /// <summary>
     /// Signals
     /// </summary>
-    public Dictionary<long, SignalSpec> Signals { get; init; } = new();
+    public Dictionary<string, SignalSpec> Signals { get; init; } = new();
 
     /// <summary>
     /// Connection settings

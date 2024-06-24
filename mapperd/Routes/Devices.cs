@@ -4,12 +4,13 @@ using mapperd.Model;
 using mapperd.Util;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using NanoidDotNet;
 
 namespace mapperd.Routes;
 
 [Route("/devices")]
 [ApiController]
-public class DevicesController(IdGenerator _idGen, Graph _graph) : ControllerBase
+public class DevicesController(Graph _graph) : ControllerBase
 {
     
     [HttpPost]
@@ -20,7 +21,7 @@ public class DevicesController(IdGenerator _idGen, Graph _graph) : ControllerBas
         var dev = new Device(request.Name, _graph);
         // Add device to connection
         var conn = (MapperSession) HttpContext.Items["Connection"];
-        var id = _idGen.CreateId();
+        var id = Nanoid.Generate();
         conn.Devices.Add(id, dev);
         return new DeviceCreateResponse
         {

@@ -44,7 +44,7 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
             var response = new Message
             {
                 Op = OpCode.ConnectionId,
-                Data = JsonValue.Create(con.Id.ToString())
+                Data = JsonValue.Create(con.Id)
             };
             var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, _jOpts));
             await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);

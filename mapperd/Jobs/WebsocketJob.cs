@@ -65,7 +65,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                     var data = msg.Data.Deserialize<SignalData>(_jOpts);
                     if (_manager.Sessions.TryGetValue(socket.ConnectionId, out var connection))
                     {
-                        if (connection.Signals.TryGetValue(data.SignalIdLong, out var signal))
+                        if (connection.Signals.TryGetValue(data.SignalId, out var signal))
                         {
                             if (data.Value is JsonArray)
                             {
@@ -120,7 +120,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
     void DestroyOrphaned()
     {
         var now = DateTime.Now;
-        var toRemove = new List<long>();
+        var toRemove = new List<string>();
         foreach (var session in _manager.Sessions)
         {
             if (session.Value.DestructionTime != null && session.Value.DestructionTime < now)

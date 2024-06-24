@@ -7,6 +7,7 @@ using mapperd.Jobs;
 using mapperd.Model;
 using mapperd.Routes;
 using mapperd.Util;
+using NanoidDotNet;
 
 namespace mapperd;
 
@@ -33,8 +34,7 @@ public class Program
                 options.JsonSerializerOptions.TypeInfoResolver = new RequirePropertiesResolver();
             });
 
-        // Identifier generator
-        builder.Services.AddSingleton(new IdGenerator(Environment.ProcessId % 1024));
+        // Identifier generator)
         builder.Services.AddSingleton<ConnectionManager>();
         builder.Services.AddSingleton(new Graph());
         builder.Services.AddSingleton(new JsonSerializerOptions
@@ -71,7 +71,7 @@ public class Program
         
        // app.UseHttpsRedirection();
        
-       app.UseMiddleware<SnowflakeLookupMiddleware>();
+       app.UseMiddleware<SessionLookupMiddleware>();
 
         app.UseAuthorization();
         

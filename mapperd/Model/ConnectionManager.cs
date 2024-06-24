@@ -1,29 +1,27 @@
 using System.Net.WebSockets;
 using IdGen;
+using NanoidDotNet;
 
 namespace mapperd.Model;
 
-public class ConnectionManager(IdGenerator idGenerator)
+public class ConnectionManager()
 {
 
-    public readonly Dictionary<long, List<Message>> Outbox = new();    
-    
-    private IdGenerator IdGenerator { get; } = idGenerator;
-
+    public readonly Dictionary<string, List<Message>> Outbox = new();    
     public List<SocketMeta> ConnectedSockets { get; } = new();
-    public Dictionary<long, MapperSession> Sessions { get; } = new();
+    public Dictionary<string, MapperSession> Sessions { get; } = new();
 
     public MapperSession ReserveConnection()
     {
-        var con = new MapperSession(IdGenerator.CreateId());
+        var con = new MapperSession(Nanoid.Generate());
         Sessions.Add(con.Id, con);
         return con;
     }
-    public void QueueOutgoingMessage(long id, Message message)
+    public void QueueOutgoingMessage(string id, Message message)
     {
         if (outLock)
         {
-            outQueue.Add(new KeyValuePair<long, Message>(id, message));
+            outQueue.Add(new KeyValuePair<string, Message>(id, message));
         }
         else
         {
@@ -39,7 +37,7 @@ public class ConnectionManager(IdGenerator idGenerator)
     }
 
     private bool outLock = false;
-    private List<KeyValuePair<long, Message>> outQueue = [];
+    private List<KeyValuePair<string, Message>> outQueue = [];
     public void LockOutbox()
     {
         outLock = true;
@@ -74,6 +72,6 @@ public class SocketMeta
     public WebSocket Socket;
     public Task<WebSocketReceiveResult> RecvTask;
     public ArraySegment<byte> RecvBuffer;
-    public long ConnectionId;
+    public string ConnectionId;
     public TaskCompletionSource CloseTask;
 }

@@ -2,10 +2,10 @@ using mapperd.Model;
 
 namespace mapperd.Util;
 
-public class SnowflakeLookupMiddleware
+public class SessionLookupMiddleware
 {
     private ConnectionManager _connectionManager;
-    public SnowflakeLookupMiddleware(RequestDelegate next, ConnectionManager connectionManager)
+    public SessionLookupMiddleware(RequestDelegate next, ConnectionManager connectionManager)
     {
         _next = next;
         _connectionManager = connectionManager;
@@ -18,14 +18,11 @@ public class SnowflakeLookupMiddleware
         var snowflake = context.Request.Headers["Session-ID"];
         if (snowflake.Count > 0)
         {
-            var snowflakeId = snowflake[0];
-            if (long.TryParse(snowflakeId, out var id))
+            var id = snowflake[0] ?? "";
+            if (_connectionManager.Sessions.ContainsKey(id))
             {
-                if (_connectionManager.Sessions.ContainsKey(id))
-                {
-                    var connection = _connectionManager.Sessions[id];
-                    context.Items["Connection"] = connection;
-                }
+                var connection = _connectionManager.Sessions[id];
+                context.Items["Connection"] = connection;
             }
         }
 
