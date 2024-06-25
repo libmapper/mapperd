@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -117,6 +118,9 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
         }
     }
     
+    [DllImport("mapper", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+    private static extern void mpr_dev_free(IntPtr dev);
+    
     void DestroyOrphaned()
     {
         var now = DateTime.Now;
@@ -131,8 +135,17 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
 
         foreach (var id in toRemove)
         {
+            foreach (var dev in _manager.Sessions[id].Devices)
+            {
+                mpr_dev_free(dev.Value.NativePtr);
+            }
             _manager.Sessions.Remove(id);
             Console.WriteLine($"Destroyed session {id}");
+        }
+
+        if (toRemove.Count > 0)
+        {
+            GC.Collect();
         }
     }
 
