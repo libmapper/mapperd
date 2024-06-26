@@ -142,11 +142,6 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
             _manager.Sessions.Remove(id);
             Console.WriteLine($"Destroyed session {id}");
         }
-
-        if (toRemove.Count > 0)
-        {
-            GC.Collect();
-        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
