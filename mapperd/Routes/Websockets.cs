@@ -57,7 +57,7 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
                 Socket = socket,
                 CloseTask = closeSource
             };
-            mgr.ConnectedSockets.Add(meta);
+            mgr.QueueAdd(meta);
             await closeSource.Task;
         }
     }

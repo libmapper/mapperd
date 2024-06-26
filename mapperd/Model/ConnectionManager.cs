@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using IdGen;
 using NanoidDotNet;
@@ -43,6 +44,16 @@ public class ConnectionManager()
         outLock = true;
     }
 
+    private List<SocketMeta> metaQueue = [];
+    public void QueueAdd(SocketMeta meta)
+    {
+        lock (metaQueue)
+        {
+            metaQueue.Add(meta);
+        }
+    }
+    
+
     public void UnlockOutbox()
     {
         // flush the queue
@@ -62,7 +73,16 @@ public class ConnectionManager()
         {
             Console.WriteLine($"Overflow: {outQueue.Count} messages in queue");
         }
+
         outQueue.Clear();
+        lock (metaQueue)
+        {
+            foreach (var meta in metaQueue)
+            {
+                ConnectedSockets.Add(meta);
+            }
+            metaQueue.Clear();
+        }
         outLock = false;
     }
 }

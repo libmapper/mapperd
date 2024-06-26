@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Mapper;
@@ -23,13 +24,14 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
         while (_running)
         {
             _graph.Poll();
-            foreach (var session in _mgr.Sessions)
+            foreach (var session in _mgr.Sessions.ToImmutableDictionary())
             {
                 foreach (var device in session.Value.Devices)
                 {
                     device.Value
                         .Poll(1);
                 }
+
                 // check for changing signals
                 foreach (var signal in session.Value.Signals)
                 {
@@ -50,7 +52,7 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
                     }
                 }
             }
-            
+
             Thread.Sleep(100);
         }
     }
