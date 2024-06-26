@@ -22,8 +22,6 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
         Console.WriteLine("Starting websocket job");
         return Task.CompletedTask;
     }
-
-    private ArraySegment<Byte> buffer = new(new byte[8192]);
     
     private async void Receive()
     {
