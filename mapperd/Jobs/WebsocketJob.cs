@@ -27,13 +27,14 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
     {
         while (_running)
         {
+            _manager.LockOutbox();
             // read messages from all connected sockets
             foreach (var socket in _manager.ConnectedSockets)
             {
                 
                 if (_manager.Outbox.TryGetValue(socket.ConnectionId, out var queue))
                 {
-                    _manager.LockOutbox();
+                    
                     List<ArraySegment<byte>> outgoingQueue = [];
                     foreach (var outgoing in queue.AsEnumerable().Reverse())
                     {
@@ -41,7 +42,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                         outgoingQueue.Add(new ArraySegment<byte>(bytes));
                     }
                     queue.Clear();
-                    _manager.UnlockOutbox();
+                    
                     foreach (var oMsg in outgoingQueue)
                     {
                         await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);
@@ -82,6 +83,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                 socket.RecvTask = socket.Socket.ReceiveAsync(socket.RecvBuffer, _cts.Token);
 
             }
+            _manager.UnlockOutbox();
 
             // find orphaned sessions and remove
 
