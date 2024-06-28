@@ -80,6 +80,7 @@ public class ConnectionManager()
             foreach (var meta in metaQueue)
             {
                 ConnectedSockets.Add(meta);
+                Sessions[meta.ConnectionId].DestructionTime = null;
             }
             metaQueue.Clear();
         }
