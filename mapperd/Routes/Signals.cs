@@ -101,7 +101,6 @@ public struct CreateSignalArgs()
 
 public enum ApiCreateType
 {
-    Float = MapperType.Float,
     Double = MapperType.Double,
     Int32 = MapperType.Int32
 }
