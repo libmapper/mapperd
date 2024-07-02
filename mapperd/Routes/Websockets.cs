@@ -1,4 +1,5 @@
 using System.Net.WebSockets;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -27,19 +28,10 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
         {
             msg = new Message { Op = OpCode.Error, Data = null };
         }
-        if (msg.Op != OpCode.Init)
+        
+        if (msg.Op == OpCode.Init)
         {
-            var response = new Message
-            {
-                Op = OpCode.Error,
-                Data = JsonValue.Create((int)ErrorReason.NoSession)
-            };
-            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, _jOpts));
-            await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Invalid opcode", CancellationToken.None);
-        }
-        else
-        {
+            // create session
             var con = mgr.ReserveConnection();
             var response = new Message
             {
@@ -59,6 +51,18 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
             };
             mgr.QueueAdd(meta);
             await closeSource.Task;
+        }
+        else
+        { 
+            // invalid first opcode
+            var response = new Message
+            {
+                Op = OpCode.Error,
+                Data = JsonValue.Create((int)ErrorReason.NoSession)
+            };
+            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response, _jOpts));
+            await socket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            await socket.CloseAsync(WebSocketCloseStatus.ProtocolError, "Invalid opcode", CancellationToken.None);
         }
     }
 }
