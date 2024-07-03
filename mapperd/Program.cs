@@ -1,13 +1,8 @@
-using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
-using IdGen;
 using Mapper;
 using mapperd.Jobs;
 using mapperd.Model;
-using mapperd.Routes;
 using mapperd.Util;
-using NanoidDotNet;
 
 namespace mapperd;
 
@@ -22,7 +17,7 @@ public class Program
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(setupAction: (opt) =>
+        builder.Services.AddSwaggerGen(setupAction: opt =>
         {
             opt.OperationFilter<SessionIDParameterAdder>();
         });
@@ -46,7 +41,7 @@ public class Program
         builder.Services.AddHostedService<WebsocketJob>();
         builder.Services.AddHostedService<PollJob>();
 
-        builder.Services.AddCors((options) =>
+        builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(opts =>
             {

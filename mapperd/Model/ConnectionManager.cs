@@ -1,11 +1,9 @@
-using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using IdGen;
 using NanoidDotNet;
 
 namespace mapperd.Model;
 
-public class ConnectionManager()
+public class ConnectionManager
 {
 
     public readonly Dictionary<string, List<Message>> Outbox = new();    
@@ -37,7 +35,7 @@ public class ConnectionManager()
         }
     }
 
-    private bool outLock = false;
+    private bool outLock;
     private List<KeyValuePair<string, Message>> outQueue = [];
     public void LockOutbox()
     {

@@ -1,8 +1,6 @@
-using IdGen;
 using Mapper;
 using mapperd.Model;
 using mapperd.Util;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using NanoidDotNet;
 
@@ -26,7 +24,7 @@ public class DevicesController(Graph _graph) : ControllerBase
         return new DeviceCreateResponse
         {
             Successful = true,
-            DeviceId = id.ToString()
+            DeviceId = id
         };
     }
 }

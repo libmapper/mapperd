@@ -40,7 +40,7 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
                     {
                         var data = new SignalData
                         {
-                            SignalId = signal.Key.ToString(),
+                            SignalId = signal.Key,
                             Value = JsonValue.Create(signal.Value.Signal.GetValue().Item1)
                         };
                         _mgr.QueueOutgoingMessage(session.Key,

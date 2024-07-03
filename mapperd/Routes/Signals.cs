@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using IdGen;
 using Mapper;
 using mapperd.Model;
 using mapperd.Util;
@@ -40,7 +39,7 @@ public class Signals(ConnectionManager _mgr) : ControllerBase
         });
         return Ok(new CreateSignalResponse
         {
-            SignalId = sigId.ToString(),
+            SignalId = sigId,
             Successful = true
         });
     }
@@ -61,7 +60,7 @@ public class Signals(ConnectionManager _mgr) : ControllerBase
         }
         return Ok(new SignalData
         {
-            SignalId = signalId.ToString(),
+            SignalId = signalId,
             Value = JsonValue.Create(signal.Signal.GetValue().Item1)
         });
     }
