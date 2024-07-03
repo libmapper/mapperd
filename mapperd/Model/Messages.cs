@@ -54,7 +54,5 @@ enum ErrorReason
 struct SignalData
 {
     public string SignalId { get; set; } // Signal ID
-    [JsonIgnore]
-    public long SignalIdLong => long.Parse(SignalId ?? "0");
     public JsonNode Value { get; set; } // Whatever value the signal has (number list for vectors, single number for scalars, etc)
 }
