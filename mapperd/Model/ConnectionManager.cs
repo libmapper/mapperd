@@ -56,6 +56,12 @@ public class ConnectionManager()
 
     public void UnlockOutbox()
     {
+        // clear sent messages
+        foreach (var kv in Outbox)
+        {
+            kv.Value.Clear();
+        }
+        
         // flush the queue
         foreach (var msg in outQueue)
         {
@@ -80,7 +86,11 @@ public class ConnectionManager()
             foreach (var meta in metaQueue)
             {
                 ConnectedSockets.Add(meta);
-                Sessions[meta.ConnectionId].DestructionTime = null;
+                foreach (var session in meta.ConnectionId)
+                {
+                    Sessions[session].DestructionTime = null;
+                }
+                
             }
             metaQueue.Clear();
         }
@@ -93,6 +103,6 @@ public class SocketMeta
     public WebSocket Socket;
     public Task<WebSocketReceiveResult> RecvTask;
     public ArraySegment<byte> RecvBuffer;
-    public string ConnectionId;
+    public List<string> ConnectionId;
     public TaskCompletionSource CloseTask;
 }

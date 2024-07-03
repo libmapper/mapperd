@@ -43,7 +43,7 @@ public class WebsocketController(ConnectionManager mgr, JsonSerializerOptions _j
             var closeSource = new TaskCompletionSource();
             var meta = new SocketMeta
             {
-                ConnectionId = con.Id,
+                ConnectionId = [con.Id],
                 RecvBuffer = buffer,
                 RecvTask = socket.ReceiveAsync(buffer, CancellationToken.None),
                 Socket = socket,

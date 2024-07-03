@@ -49,7 +49,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                             _cts.Token);
                 }
             }
-
+            
             _manager.UnlockOutbox();
 
             // find orphaned sessions and remove
@@ -65,19 +65,20 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
 
     private async void Poll(SocketMeta socket)
     {
-        if (_manager.Outbox.TryGetValue(socket.ConnectionId, out var queue))
+        foreach (var connId in socket.ConnectionId)
         {
-            List<ArraySegment<byte>> outgoingQueue = [];
-            foreach (var outgoing in queue.AsEnumerable().Reverse())
+            if (_manager.Outbox.TryGetValue(connId, out var queue))
             {
-                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
-                outgoingQueue.Add(new ArraySegment<byte>(bytes));
+                List<ArraySegment<byte>> outgoingQueue = [];
+                foreach (var outgoing in queue.AsEnumerable().Reverse())
+                {
+                    var bytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(outgoing, _jOpts));
+                    outgoingQueue.Add(new ArraySegment<byte>(bytes));
+                }
+
+                foreach (var oMsg in outgoingQueue)
+                    await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);
             }
-
-            queue.Clear();
-
-            foreach (var oMsg in outgoingQueue)
-                await socket.Socket.SendAsync(oMsg, WebSocketMessageType.Text, true, _cts.Token);
         }
 
         if (!socket.RecvTask.IsCompleted) return;
@@ -94,7 +95,9 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
         if (msg.Op == OpCode.SignalData)
         {
             var data = msg.Data.Deserialize<SignalData>(_jOpts);
-            if (_manager.Sessions.TryGetValue(socket.ConnectionId, out var connection))
+            foreach (var conn in socket.ConnectionId)
+            {
+                if (!_manager.Sessions.TryGetValue(conn, out var connection)) continue;
                 if (connection.Signals.TryGetValue(data.SignalId, out var signal))
                 {
                     if (data.Value is JsonArray)
@@ -104,6 +107,8 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                         signal.Signal.SetValue(
                             data.Value.Deserialize(SignalSpec.ConvertMapperTypeToNative(signal.Type)));
                 }
+                break;
+            }
         }
 
         // reset the buffer
@@ -117,7 +122,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
     private void TagOrphaned()
     {
         foreach (var session in _manager.Sessions)
-            if (_manager.ConnectedSockets.Find(socket => socket.ConnectionId == session.Key) == null)
+            if (_manager.ConnectedSockets.Find(socket => socket.ConnectionId.Contains(session.Key)) == null)
             {
                 if (session.Value.DestructionTime == null && session.Value.Settings.DestroyTimeout >= 0)
                     session.Value.DestructionTime = DateTime.Now.AddSeconds(session.Value.Settings.DestroyTimeout);
