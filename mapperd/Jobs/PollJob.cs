@@ -29,7 +29,7 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
                 foreach (var device in session.Value.Devices)
                 {
                     device.Value
-                        .Poll(1);
+                        .Poll(-1);
                 }
 
                 // check for changing signals
