@@ -21,7 +21,7 @@ public class Signals(ConnectionManager _mgr) : ControllerBase
         {
             return NotFound();
         }
-        var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, (MapperType)args.Type, unit: args.Units);
+        var sig = device.AddSignal(args.Direction, args.Name, args.VectorLength, args.NativeType, unit: args.Units);
         if (args.Min != null)
         {
             sig.SetProperty(Property.Min, args.Min);
@@ -91,6 +91,13 @@ public struct CreateSignalArgs()
     public string Name { get; set; }
     public Signal.Direction Direction { get; set; }
     public ApiCreateType Type { get; set; }
+    
+    public MapperType NativeType => Type switch
+    {
+        ApiCreateType.Double => MapperType.Double,
+        ApiCreateType.Int32 => MapperType.Int32,
+        _ => throw new ArgumentOutOfRangeException()
+    };
 
     public int VectorLength { get; set; } = 1;
     public float? Min { get; set; }
@@ -100,8 +107,8 @@ public struct CreateSignalArgs()
 
 public enum ApiCreateType
 {
-    Double = MapperType.Double,
-    Int32 = MapperType.Int32
+    Double = 0,
+    Int32 = 1
 }
 
 public struct CreateSignalResponse
