@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Mapper;
 using mapperd.Model;
 using mapperd.Util;
@@ -92,7 +93,8 @@ public struct CreateSignalArgs()
     public Signal.Direction Direction { get; set; }
     public ApiCreateType Type { get; set; }
     
-    public MapperType NativeType => Type switch
+    [JsonIgnore]
+    internal MapperType NativeType => Type switch
     {
         ApiCreateType.Double => MapperType.Double,
         ApiCreateType.Int32 => MapperType.Int32,
