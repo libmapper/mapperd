@@ -36,7 +36,7 @@ public class Signals(ConnectionManager _mgr) : ControllerBase
         conn.Signals.Add(sigId, new SignalSpec
         {
             Signal = sig,
-            Type = (MapperType)args.Type
+            Type = args.NativeType
         });
         return Ok(new CreateSignalResponse
         {
