@@ -29,14 +29,14 @@ public class PollJob(ConnectionManager _mgr, Graph _graph, JsonSerializerOptions
                 foreach (var device in session.Value.Devices)
                 {
                     device.Value
-                        .Poll(-1);
+                        .Poll(10);
                 }
 
                 // check for changing signals
                 foreach (var signal in session.Value.Signals)
                 {
                     var flags = signal.Value.Signal.FetchStatus();
-                    if (flags.HasFlag(Signal.StatusFlags.SetRemote))
+                    if (flags.HasFlag(Signal.StatusFlags.UpdateRemote))
                     {
                         var data = new SignalData
                         {
