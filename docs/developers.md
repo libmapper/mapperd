@@ -68,3 +68,8 @@ If sent in response to `INIT`, `data` will be a connection token that should be 
 
 If responding to `RESUME`, `data` will contain the same session token to confirm that the session has been attached to the
 websocket.
+
+## REST
+`mapperd` also has a REST api for more transactional operations that would be awkward to perform over WebSockets. 
+
+Documentation is in [rest.md](rest.md)
