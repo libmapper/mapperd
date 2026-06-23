@@ -1,9 +1,15 @@
 using Mapper;
+using MapperType = Mapper.Type;
+using Type = System.Type;
 
 namespace mapperd.Model;
 
 public record MapperSession(string _id)
 {
+    ~MapperSession()
+    {
+        Console.WriteLine($"Destructor ran for session {_id}");
+    }
     /// <summary>
     /// Connection identifier
     /// </summary>
@@ -42,6 +48,7 @@ public class ConnectionSettings
     /// </summary>
     public int DestroyTimeout { get; set; } = 3;
 }
+
 
 
 public struct SignalSpec

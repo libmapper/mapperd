@@ -146,5 +146,7 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
             _manager.Sessions.Remove(id);
             Console.WriteLine($"Destroyed session {id}");
         }
+        
+        GC.Collect();
     }
 }

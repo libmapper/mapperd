@@ -94,10 +94,10 @@ public struct CreateSignalArgs()
     public ApiCreateType Type { get; set; }
     
     [JsonIgnore]
-    internal MapperType NativeType => Type switch
+    internal Mapper.Type NativeType => Type switch
     {
-        ApiCreateType.Double => MapperType.Double,
-        ApiCreateType.Int32 => MapperType.Int32,
+        ApiCreateType.Double => Mapper.Type.Double,
+        ApiCreateType.Int32 => Mapper.Type.Int32,
         _ => throw new ArgumentOutOfRangeException()
     };
 
