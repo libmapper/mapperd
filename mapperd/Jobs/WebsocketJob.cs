@@ -54,8 +54,10 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
 
             // find orphaned sessions and remove
 
-            TagOrphaned();
-            DestroyOrphaned();
+            lock (_manager.Sessions)
+            {
+                TagOrphaned();
+            }
 
             // remove disconnected sockets
             _manager.ConnectedSockets.RemoveAll(socket => socket.Socket.State == WebSocketState.Closed);
@@ -127,26 +129,5 @@ public class WebsocketJob(ConnectionManager _manager, JsonSerializerOptions _jOp
                 // session was resumed
                 session.Value.DestructionTime = null;
             }
-    }
-
-    [DllImport("mapper", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-    private static extern void mpr_dev_free(IntPtr dev);
-
-    private void DestroyOrphaned()
-    {
-        var now = DateTime.Now;
-        var toRemove = new List<string>();
-        foreach (var session in _manager.Sessions)
-            if (session.Value.DestructionTime != null && session.Value.DestructionTime < now)
-                toRemove.Add(session.Key);
-
-        foreach (var id in toRemove)
-        {
-            foreach (var dev in _manager.Sessions[id].Devices) mpr_dev_free(dev.Value.NativePtr);
-            _manager.Sessions.Remove(id);
-            Console.WriteLine($"Destroyed session {id}");
-        }
-        
-        GC.Collect();
     }
 }
